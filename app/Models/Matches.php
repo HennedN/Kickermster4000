@@ -11,7 +11,7 @@ class Matches extends Model
     use HasFactory;
 
     protected $fillable = [
-        'score'
+        'Score'
     ];
 
     public function teams()

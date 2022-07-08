@@ -22,7 +22,10 @@ Route::get('/createMatch', function () {
 Route::get('createPlayer', function () {
     return view('createPlayer');
 })->name('createPlayer');
-Route::post('/create/match', [MatchesController::class, 'create'])->name('create.match');
+Route::get('updateMatch/{id}', [MatchesController::class, 'renderUpdateMatch'])->name('updateMatch');
+Route::post('/match/update', [MatchesController::class, 'update'])->name('update.match');
+Route::get('/match/delete/{id}', [MatchesController::class, 'delete'])->name('delete.match');
+Route::post('/match/create', [MatchesController::class, 'create'])->name('create.match');
 Route::post('/create/player', [PlayerController::class, 'create'])->name('create.player');
 Route::get('/download', [MatchesController::class, 'downloadCSV'])->name('download');
 Route::get('/player', [PlayerController::class, 'render'])->name('player');

@@ -68,8 +68,11 @@
                 <th scope="col" class="text-sm font-medium  px-6 py-4 border-r">
                     Ergebnis
                 </th>
-                <th scope="col" class="text-sm font-medium  px-6 py-4">
+                <th scope="col" class="text-sm font-medium  px-6 py-4 border-r">
                     Sieger
+                </th>
+                <th scope="col" class="text-sm font-medium  px-6 py-4">
+                    Action
                 </th>
                 </tr>
             </thead>
@@ -85,12 +88,16 @@
                     <td class="text-sm  font-light px-6 py-4 whitespace-nowrap border-r">
                         {{ $match->Score }}
                     </td>
-                    <td class="text-sm  font-light px-6 py-4 whitespace-nowrap">
+                    <td class="text-sm  font-light px-6 py-4 whitespace-nowrap border-r">
                         @foreach ($match->teams as $team)
                             @if ($team->winner)
                                 {{ $team->player1 }} {{ $team->player2 }}
                             @endif
                         @endforeach
+                    </td>
+                    <td class="text-sm  font-light px-6 py-4 whitespace-nowrap">
+                        <a href="{{ route('updateMatch', ['id' => $match->id]) }}">Update</a>
+                        <a href="{{ route('delete.match', ['id' => $match->id]) }}">Delete</a>
                     </td>
                 </tr>
                 @endforeach

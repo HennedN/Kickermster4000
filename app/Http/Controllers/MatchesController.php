@@ -33,6 +33,42 @@ class MatchesController extends Controller
         return Response::download($filename, 'matches.csv', $headers);
     }
 
+    public function update(Request $request)
+    {
+        $match = Matches::find($request->id);
+
+        $match->update([
+            'Score' => $request->score,
+        ]);
+
+        $team1 = $match->teams[0];
+        $team1->update([
+            'player1' => $request->player1,
+            'player2' => $request->player2,
+            'winner' => $request->winner == 'Team1' ? true : false,
+        ]);
+
+        $team2 = $match->teams[1];
+        $team2->update([
+            'player1' => $request->player3,
+            'player2' => $request->player4,
+            'winner' => $request->winner == 'Team2' ? true : false,
+        ]);
+        return redirect()->route('matches');
+    }
+
+    public function delete($id)
+    {
+        $match = Matches::find($id);
+        $team1_id = $match->teams[0]->id;
+        $team1 = Team::find($team1_id)->delete();
+        $team2_id = $match->teams[1]->id;
+        $team2 = Team::find($team2_id)->delete();
+        $match->delete();
+
+        return redirect()->route('matches');
+    }
+
     public function create(Request $request)
     {
 
@@ -102,20 +138,28 @@ class MatchesController extends Controller
     {
         $ergebnis = [];
         foreach ($wins as $key => $win) {
-            $ergebnis[$key] = ['wins' => $win];
+            $ergebnis[$key] = ['wins' => $win, 'loss' => 0];
         }
         foreach ($losses as $key => $loss) {
             if (isset($ergebnis[$key])) {
-                $ergebnis[$key] += ['loss' => $loss];
+                $ergebnis[$key]['loss'] += $loss;
             }
         }
         foreach ($ergebnis as $key => $item) {
             $ergebnis[$key] += ['win%' => number_format(($item['wins']/($item['wins']+$item['loss']))*100, 2)];
         }
+        
         $ergebnis = collect($ergebnis)->sortBy('win%')->reverse()->toArray();
         
         $ergebnis = array_slice($ergebnis, 0, 3);
+        
         return $ergebnis;
+    }
+
+    public function renderUpdateMatch($id)
+    {
+        $match = Matches::where('id', $id)->first();
+        return view('updateMatch', ['match' => $match]);
     }
 
     public function render()
@@ -123,6 +167,7 @@ class MatchesController extends Controller
         $wins = $this->calculateWinAmount();
         $losses = $this->calculateLoseAmount();
         $stats = $this->calculateTopPlayers($wins, $losses);
+        
         $matches = Matches::orderByDesc('created_at')->paginate(20);
         return view('matches', compact('matches', 'stats'));
     }
