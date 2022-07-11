@@ -71,14 +71,13 @@ class MatchesController extends Controller
 
     public function create(Request $request)
     {
-
-        $player1 = Player::where('nachname', $request->player1)->first();
-        $player2 = Player::where('nachname', $request->player2)->first();
-        $player3 = Player::where('nachname', $request->player3)->first();
-        $player4 = Player::where('nachname', $request->player4)->first();
-
+        $player_arr = explode(',', $request->values);
+        $player1 = Player::where('id', $player_arr[0])->first();
+        $player2 = Player::where('id', $player_arr[1])->first();
+        $player3 = Player::where('id', $player_arr[2])->first();
+        $player4 = Player::where('id', $player_arr[3])->first();
         $match = Matches::create([
-            'score' => $request->score,
+            'Score' => $request->score,
         ]);
         
         $team1 = Team::create([
@@ -156,6 +155,13 @@ class MatchesController extends Controller
         return $ergebnis;
     }
 
+
+    public function renderCreateMatch()
+    {
+        $player = Player::get();
+        return view('createMatch', ['player' => $player]);
+    }
+
     public function renderUpdateMatch($id)
     {
         $match = Matches::where('id', $id)->first();
@@ -169,6 +175,7 @@ class MatchesController extends Controller
         $stats = $this->calculateTopPlayers($wins, $losses);
         
         $matches = Matches::orderByDesc('created_at')->paginate(20);
+        $player = Player::get();
         return view('matches', compact('matches', 'stats'));
     }
 }

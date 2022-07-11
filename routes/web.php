@@ -16,9 +16,8 @@ use App\Http\Controllers\MatchesController;
 */
 
 Route::get('/', [MatchesController::class, 'render'])->name('matches');
-Route::get('/createMatch', function () {
-    return view('createMatch');
-})->name('createMatch');
+Route::get('/createMatch', [MatchesController::class, 'renderCreateMatch'])->name('createMatch');
+
 Route::get('createPlayer', function () {
     return view('createPlayer');
 })->name('createPlayer');
